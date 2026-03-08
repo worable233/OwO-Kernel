@@ -10,11 +10,11 @@
 引导加载程序将在内核文件的前 8 KiB 中搜索此签名，且该签名需在 32 位边界对齐。
 签名位于自己的段中，以便强制将头放在内核文件的前 8 KiB 内。
 */
-.section .multiboot
-.align 4
-.long MAGIC
-.long FLAGS
-.long CHECKSUM
+.section .multiboot             /*     定义一个名为 .multiboot 的汇编段。链接脚本通常会将这个段放在内核文件的非常靠前的位置（例如前 8KB 内），确保引导加载程序能扫描到它。 */
+.align 4                        /*     要求接下来的数据按 4 字节（32 位）边界对齐。Multiboot 规范规定头部必须 32 位对齐，这样引导加载程序才能正确读取其中的字段。 */
+.long MAGIC                     /*     存放一个 32 位整数，值为之前定义的 MAGIC = 0x1BADB002。这是 Multiboot 的魔数，引导加载程序用它来确认这是一个合法的内核。 */
+.long FLAGS                     /*     存放 FLAGS 值（本例中为 ALIGN | MEMINFO = 3），告诉引导加载程序需要提供哪些功能（如页对齐加载和内存映射）。 */
+.long CHECKSUM                  /*     存放校验和 -(MAGIC + FLAGS)，使得 MAGIC + FLAGS + CHECKSUM = 0。引导加载程序会计算这个和来验证头部未被破坏。 */
 
 /*
 多重引导标准未定义栈指针寄存器（esp）的值，内核需自行提供栈。
