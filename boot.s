@@ -1,9 +1,9 @@
 /* 为多重引导头声明常量。 */
-.set ALIGN,    1<<0             /* 在页边界上对齐加载的模块 */
-.set MEMINFO,  1<<1             /* 提供内存映射 */
-.set FLAGS,    ALIGN | MEMINFO  /* 这是多重引导的“标志”字段 */
-.set MAGIC,    0x1BADB002       /* “魔数”让引导加载程序找到头 */
-.set CHECKSUM, -(MAGIC + FLAGS) /* 上述字段的校验和，证明我们符合多重引导规范 */
+.set ALIGN,    1<<0             /* 这个常量对应 Multiboot 头部的 flags 字段中的一个比特位，值为 1，表示要求引导加载程序将内核模块加载到页边界对齐的内存地址上（通常页大小为 4KB）。 */
+.set MEMINFO,  1<<1             /* 该位为 1 表示要求引导加载程序在启动时向内核提供内存映射信息（通过 multiboot_info 结构体传递）。 */
+.set FLAGS,    ALIGN | MEMINFO  /*     | 是按位或运算，将 ALIGN（1）和 MEMINFO（2）合并得到数值 3。这个 FLAGS 就是 Multiboot 头部中的 flags 字段的值，告诉引导加载程序需要启用哪些特性（这里是同时需要页对齐和内存映射）。*/
+.set MAGIC,    0x1BADB002       /* 是一个固定的魔数，由 Multiboot 规范定义。引导加载程序会在内核文件的前 8KB 内搜索这个值，以确认这是一个符合规范的可启动内核。 */
+.set CHECKSUM, -(MAGIC + FLAGS) /* 校验和的计算方式为 0 - (MAGIC + FLAGS)，使得 MAGIC + FLAGS + CHECKSUM = 0。这个字段用于验证头部的完整性，确保头部没有被损坏或修改。 */
 
 /*
 声明一个多重引导头，将程序标记为内核。这些是在多重引导标准中记载的魔数。
